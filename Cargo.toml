@@ -5,8 +5,9 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.14.*", features = ["dynamic_linking"] }
-tessellation = { version = "0.8.*" }
-nalgebra = { version = "0.22.1" }
+bevy_egui = "0.29"
+tessellation =  "0.8.*"
+nalgebra = "0.22.1"
 
 [profile.dev]
 opt-level = 1
