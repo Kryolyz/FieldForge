@@ -1,6 +1,5 @@
 use bevy::prelude::*;
-mod resources;
-use bevy::render::camera::Viewport;
+pub mod resources;
 use bevy::window::PrimaryWindow;
 
 #[derive(Default, Resource)]
@@ -13,7 +12,7 @@ pub struct OccupiedScreenSpace {
 
 use crate::scene::inputs::components::Main3DCameraMarker;
 use crate::scene::inputs::resources::CameraTarget;
-use crate::scene::inputs::resources::OriginalCameraTransform;
+use crate::scene::tesselate::resources::PrimitiveType;
 
 pub struct UiPlugin;
 
@@ -25,13 +24,16 @@ impl Plugin for UiPlugin {
                 children: vec![
                     resources::TreeNode {
                         name: "Child 1".to_string(),
-                        children: vec![],
+                        primitive_type: PrimitiveType::Sphere,
+                        ..default()
                     },
                     resources::TreeNode {
                         name: "Child 2".to_string(),
-                        children: vec![],
+                        primitive_type: PrimitiveType::Sphere,
+                        ..default()
                     },
                 ],
+                ..default()
             },
         }).add_systems(Update, update_camera_transform_system);
     }

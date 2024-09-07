@@ -1,17 +1,31 @@
 use bevy::prelude::*;
-use std::collections::HashMap;
+use std::{collections::HashMap, string};
+
+use crate::scene::tesselate::resources::PrimitiveType;
 
 #[derive(Resource)]
 pub struct TreeNode {
     pub name: String,
     pub children: Vec<TreeNode>,
+    pub extended: bool,
+    pub primitive_type: PrimitiveType,
+    pub transform: bevy::prelude::Transform
+}
+
+impl Default for PrimitiveType {
+    fn default() -> Self {
+        PrimitiveType::None
+    }
 }
 
 impl TreeNode {
-    pub fn new(name: &str) -> TreeNode {
+    pub fn new(name: &str, primitive_type: PrimitiveType, transform: bevy::prelude::Transform) -> TreeNode {
         TreeNode {
             name: name.to_string(),
             children: vec![],
+            extended: true,
+            primitive_type: primitive_type,
+            transform: transform
         }
     }
 
@@ -27,6 +41,17 @@ impl TreeNode {
     }
 }
 
+impl Default for TreeNode {
+    fn default() -> Self {
+        TreeNode {
+            name: String::new(),
+            children: vec![],
+            extended: true,
+            ..default()
+        }
+    }
+}
+
 #[derive(Resource)]
 pub struct Tree {
     pub root: TreeNode,
@@ -35,7 +60,7 @@ pub struct Tree {
 impl Tree {
     pub fn new(root_name: &str) -> Self {
         Tree {
-            root: TreeNode::new(root_name),
+            root: TreeNode::new(root_name, PrimitiveType::None, bevy::prelude::Transform::default()),
         }
     }
 

@@ -1,5 +1,6 @@
 // use bevy::render::mesh::{Indices, PrimitiveTopology, VertexAttributeValues};
 pub mod shapes;
+pub mod resources;
 use nalgebra as na;
 use nalgebra::Point3;
 

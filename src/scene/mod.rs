@@ -5,7 +5,7 @@ use bevy::render::mesh::{Indices, PrimitiveTopology, VertexAttributeValues};
 use bevy::render::render_asset::RenderAssetUsages;
 
 // mod components;
-mod tesselate;
+pub mod tesselate;
 pub use crate::scene::tesselate::shapes;
 
 pub mod inputs;
