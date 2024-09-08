@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 pub mod resources;
 use bevy::window::PrimaryWindow;
+use nalgebra::Point3;
 
 #[derive(Default, Resource)]
 pub struct OccupiedScreenSpace {
@@ -18,24 +19,26 @@ pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(resources::Tree {
-            root: resources::TreeNode {
-                name: "Root".to_string(),
-                children: vec![
-                    resources::TreeNode {
-                        name: "Child 1".to_string(),
-                        primitive_type: PrimitiveType::Sphere,
-                        ..default()
-                    },
-                    resources::TreeNode {
-                        name: "Child 2".to_string(),
-                        primitive_type: PrimitiveType::Sphere,
-                        ..default()
-                    },
-                ],
-                ..default()
-            },
-        }).add_systems(Update, update_camera_transform_system);
+        app.add_systems(Update, update_camera_transform_system)
+            .insert_resource(resources::Tree {
+                root: resources::TreeNode {
+                    name: "Root".to_string(),
+                    collapsed: false,
+                    children: vec![
+                        resources::TreeNode {
+                            name: "Child 1".to_string(),
+                            primitive_type: PrimitiveType::Sphere,
+                            ..default()
+                        },
+                        resources::TreeNode {
+                            name: "Child 2".to_string(),
+                            primitive_type: PrimitiveType::Sphere,
+                            ..default()
+                        },
+                    ],
+                    ..default()
+                },
+            });
     }
 }
 
@@ -43,10 +46,25 @@ fn update_camera_transform_system(
     mut camera_query: Query<&mut Camera, With<Main3DCameraMarker>>,
     occupied_screen_space: Res<OccupiedScreenSpace>,
     windows: Query<&Window, With<PrimaryWindow>>,
-    camera_target: Res<CameraTarget>,
 ) {
-    let camera = &mut camera_query.single_mut();
-    // let camera = camera_query.get_single_mut();
+
+    // Check if the camera query finds a camera
+    let mut camera = match camera_query.get_single_mut() {
+        Ok(camera) => camera,
+        Err(_) => {
+            eprintln!("No camera found with Main3DCameraMarker");
+            return;
+        }
+    };
+
+    // Check if the window query finds a primary window
+    let window = match windows.get_single() {
+        Ok(window) => window,
+        Err(_) => {
+            eprintln!("No primary window found");
+            return;
+        }
+    };
 
     let left_taken = occupied_screen_space.left; // / window.width();
     let right_taken = occupied_screen_space.right; // / window.width();

@@ -8,8 +8,7 @@ bevy = { version = "0.14.*", features = ["dynamic_linking"] }
 bevy_egui = "0.29"
 tessellation =  "0.8.*"
 nalgebra = "0.22.1"
-strum = "0.26"
-strum_macros = "0.26"
+num_enum = "0.5"
 
 [profile.dev]
 opt-level = 1

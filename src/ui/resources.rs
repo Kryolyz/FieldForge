@@ -1,5 +1,7 @@
 use bevy::prelude::*;
-use std::{collections::HashMap, string};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+use std::hash::{Hash, Hasher};
 
 use crate::scene::tesselate::resources::PrimitiveType;
 
@@ -7,25 +9,24 @@ use crate::scene::tesselate::resources::PrimitiveType;
 pub struct TreeNode {
     pub name: String,
     pub children: Vec<TreeNode>,
-    pub extended: bool,
+    pub collapsed: bool,
     pub primitive_type: PrimitiveType,
-    pub transform: bevy::prelude::Transform
-}
-
-impl Default for PrimitiveType {
-    fn default() -> Self {
-        PrimitiveType::None
-    }
+    pub transform: bevy::prelude::Transform,
+    pub id: u64,
+    pub marked_for_deletion: bool, // New field
 }
 
 impl TreeNode {
     pub fn new(name: &str, primitive_type: PrimitiveType, transform: bevy::prelude::Transform) -> TreeNode {
+        pub static NODE_ID_COUNTER: AtomicU64 = AtomicU64::new(1);
         TreeNode {
             name: name.to_string(),
             children: vec![],
-            extended: true,
+            collapsed: false,
             primitive_type: primitive_type,
-            transform: transform
+            transform: transform,
+            id: NODE_ID_COUNTER.fetch_add(1, Ordering::SeqCst),
+            marked_for_deletion: false
         }
     }
 
@@ -43,12 +44,15 @@ impl TreeNode {
 
 impl Default for TreeNode {
     fn default() -> Self {
-        TreeNode {
-            name: String::new(),
-            children: vec![],
-            extended: true,
-            ..default()
-        }
+        return TreeNode::new("", PrimitiveType::default(), Transform::default());
+    }
+}
+
+impl Hash for TreeNode {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.primitive_type.hash(state);
+        state.write_u64(self.id);
     }
 }
 

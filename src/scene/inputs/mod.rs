@@ -44,8 +44,8 @@ pub fn camera_orbit_controls(
                 let up = transform.rotation * Vec3::Y;
 
                 // Apply rotation around target using the camera's local axes
-                info!("{:?}", up);
-                info!("{:?}", right);
+                debug!("{:?}", up);
+                debug!("{:?}", right);
                 transform.rotate_around(
                     orbit_camera.target,
                     Quat::from_axis_angle(up, -yaw) * Quat::from_axis_angle(right, -pitch),
